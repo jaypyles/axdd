@@ -1,12 +1,9 @@
-use daemonize::Daemonize;
 use dirs::home_dir;
 use env_logger;
 use jrutils;
-use log::LevelFilter;
-use log::{info, warn};
+use log::{error, info};
 use std::collections::HashMap;
 use std::fs;
-use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread;
@@ -190,7 +187,7 @@ fn main() {
         if !(checked == current_status) {
             for display in &displays {
                 if check_connected(&display) {
-                    info!("NEW DISPLAY CONNECTED: {:?}", display);
+                    info!(target: "display_status", "NEW DISPLAY CONNECTED: {:?}", display);
                     let home_path = home_dir().expect("Could not get home dir!");
                     let screen_path = home_path.join(&display.screenlayout);
 
@@ -199,10 +196,14 @@ fn main() {
                         .spawn()
                         .expect("Failed to execute xrandr");
 
-                    Command::new("bash")
-                        .arg(screen_path)
-                        .spawn()
-                        .expect("Failed to execute layout switch.");
+                    match Command::new("bash").arg(screen_path).spawn() {
+                        Ok(_) => {
+                            info!(target: "display_status", "Connected to display: {:?}", display.name);
+                        }
+                        Err(_) => {
+                            error!(target: "display_status", "Could not connect to display: {:?}", display.name)
+                        }
+                    }
 
                     current_status = get_available_displays();
                     is_connected = true;
