@@ -21,5 +21,7 @@ WantedBy=multi-user.target
 ```
 
 `systemctl --user daemon-reload`
+
 `systemctl --user enable axdd.service`
+
 `systemctl --user start axdd.service`
