@@ -4,7 +4,7 @@ A simple tool to be used with systemd to create a daemon which recognizes displa
 
 ## Systemctl Configuration
 
-axdd.service
+Setup a config file at `~/.config/systemd/user/axdd.service`
 
 ```bash
 [Unit]
